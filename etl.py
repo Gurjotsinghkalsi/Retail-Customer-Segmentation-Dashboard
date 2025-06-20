@@ -103,3 +103,51 @@ with engine.begin() as conn:
         })
 
 print("✅ dim_date populated (with UPSERT).")
+
+# ========== 5. Load fact_sales ==========
+
+# Prepare base dataframe
+sales_df = df[['InvoiceNo', 'CustomerID', 'StockCode', 'InvoiceDate', 'Quantity', 'UnitPrice']].dropna()
+
+# Clean & rename columns
+sales_df = sales_df.rename(columns={
+    'InvoiceNo': 'invoice_no',
+    'CustomerID': 'customer_id',
+    'StockCode': 'product_id',
+    'InvoiceDate': 'full_date',
+    'Quantity': 'quantity',
+    'UnitPrice': 'unit_price'
+})
+sales_df['full_date'] = pd.to_datetime(sales_df['full_date']).dt.date
+sales_df['total_amount'] = sales_df['quantity'] * sales_df['unit_price']
+
+# Load lookup tables
+dim_date = pd.read_sql("SELECT date_id, full_date FROM dim_date", engine)
+dim_product = pd.read_sql("SELECT product_id FROM dim_product", engine)
+dim_customer = pd.read_sql("SELECT customer_id FROM dim_customer", engine)
+
+# Merge to get foreign keys
+sales_df = sales_df.merge(dim_date, how='left', on='full_date')
+sales_df = sales_df.merge(dim_customer, how='inner', on='customer_id')
+sales_df = sales_df.merge(dim_product, how='inner', on='product_id')
+
+# Select required columns
+fact_df = sales_df[['invoice_no', 'date_id', 'customer_id', 'product_id', 'quantity', 'unit_price', 'total_amount']].drop_duplicates()
+
+with engine.begin() as conn:
+    for _, row in fact_df.iterrows():
+        conn.execute(text("""
+            INSERT INTO fact_sales (invoice_no, date_id, customer_id, product_id, quantity, unit_price, total_amount)
+            VALUES (:inv, :did, :cid, :pid, :qty, :price, :total)
+            ON CONFLICT DO NOTHING
+        """), {
+            "inv": row['invoice_no'],
+            "did": int(row['date_id']),
+            "cid": int(row['customer_id']),
+            "pid": row['product_id'],
+            "qty": int(row['quantity']),
+            "price": float(row['unit_price']),
+            "total": float(row['total_amount'])
+        })
+
+print("✅ fact_sales populated (with UPSERT).")
