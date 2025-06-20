@@ -46,3 +46,30 @@ with engine.begin() as conn:
         })
 
 print("✅ dim_customer populated (with UPSERT).")
+
+# ========== 3. Load dim_product ==========
+# Clean: Drop rows with missing StockCode, Description, or UnitPrice
+product_df = df[['StockCode', 'Description', 'UnitPrice']].dropna().drop_duplicates()
+product_df = product_df.rename(columns={
+    'StockCode': 'product_id',
+    'Description': 'description',
+    'UnitPrice': 'unit_price'
+})
+
+# Optional: Add placeholder 'category' column (can enhance later)
+product_df['category'] = 'Unknown'
+
+with engine.begin() as conn:
+    for _, row in product_df.iterrows():
+        conn.execute(text("""
+            INSERT INTO dim_product (product_id, description, category, unit_price)
+            VALUES (:pid, :desc, :cat, :price)
+            ON CONFLICT (product_id) DO NOTHING
+        """), {
+            "pid": str(row['product_id']),
+            "desc": str(row['description']),
+            "cat": row['category'],
+            "price": float(row['unit_price'])
+        })
+
+print("✅ dim_product populated (with UPSERT).")
