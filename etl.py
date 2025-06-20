@@ -73,3 +73,33 @@ with engine.begin() as conn:
         })
 
 print("✅ dim_product populated (with UPSERT).")
+
+# ========== 4. Load dim_date ==========
+# Extract dates from InvoiceDate column
+date_df = df[['InvoiceDate']].dropna().drop_duplicates()
+date_df['full_date'] = pd.to_datetime(date_df['InvoiceDate']).dt.date
+
+# Remove duplicates again, keep only date part
+date_df = pd.DataFrame(date_df['full_date'].unique(), columns=['full_date'])
+
+# Extract date parts
+date_df['year'] = pd.to_datetime(date_df['full_date']).dt.year
+date_df['month'] = pd.to_datetime(date_df['full_date']).dt.month
+date_df['day'] = pd.to_datetime(date_df['full_date']).dt.day
+date_df['weekday'] = pd.to_datetime(date_df['full_date']).dt.day_name()
+
+with engine.begin() as conn:
+    for _, row in date_df.iterrows():
+        conn.execute(text("""
+            INSERT INTO dim_date (full_date, year, month, day, weekday)
+            VALUES (:date, :yr, :mon, :d, :wday)
+            ON CONFLICT (full_date) DO NOTHING
+        """), {
+            "date": row['full_date'],
+            "yr": int(row['year']),
+            "mon": int(row['month']),
+            "d": int(row['day']),
+            "wday": row['weekday']
+        })
+
+print("✅ dim_date populated (with UPSERT).")
