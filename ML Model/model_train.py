@@ -22,8 +22,10 @@ kmeans = KMeans(n_clusters=k, random_state=42)
 df['cluster'] = kmeans.fit_predict(X_scaled)
 
 # Step 4: Export cluster labels
-df_with_ids = pd.concat([customer_ids, df.drop(columns=X.columns)], axis=1)
-df_with_ids.to_csv("clustered_customers.csv", index=False)
+# Save all features + cluster label + customer_id
+df_full = pd.concat([customer_ids, pd.DataFrame(X, columns=X.columns)], axis=1)
+df_full['cluster'] = df['cluster']
+df_full.to_csv("clustered_customers.csv", index=False)
 
 # Step 5: Summarize each cluster (mean metrics)
 summary = df.groupby('cluster').mean(numeric_only=True)
@@ -44,3 +46,7 @@ plt.ylabel("Inertia")
 plt.title("Elbow Method")
 plt.grid()
 plt.show()
+
+# cluster labelling 
+print("📊 Cluster Summary:")
+print(df.groupby('cluster').mean(numeric_only=True))
