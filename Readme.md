@@ -2,6 +2,12 @@
 
 A complete end-to-end **Data Engineering + Machine Learning** project that segments online retail customers based on purchasing behavior and presents insights via an interactive **Streamlit dashboard**.
 
+- [![Live Demo](https://img.shields.io/badge/🚀%20Live%20App-Streamlit-orange?logo=streamlit)](https://retail-customer-segmentation-dashboard.onrender.com)
+
+- [![GitHub Repo](https://img.shields.io/badge/💻%20Source%20Code-GitHub-black?logo=github)](https://github.com/Gurjotsinghkalsi/Retail-Customer-Segmentation-Dashboard)
+
+- [![Built with](https://img.shields.io/badge/Built%20with-Python%20%7C%20Streamlit%20%7C%20Docker-blue)](#)
+
 ---
 
 ## 🔍 Overview
