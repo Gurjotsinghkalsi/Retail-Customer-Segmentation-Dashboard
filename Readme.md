@@ -44,7 +44,7 @@ This project demonstrates the modern data workflow:
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/your-username/retail-ml-app.git
+git clone https://github.com/Gurjotsinghkalsi/Retail-Customer-Segmentation-Dashboard
 cd retail-ml-app
 ```
 
