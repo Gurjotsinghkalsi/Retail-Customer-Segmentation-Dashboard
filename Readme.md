@@ -14,11 +14,8 @@ This project demonstrates the modern data workflow:
 - 📊 Visualized insights using Streamlit, Plotly & Matplotlib
 - 🐳 Dockerized app for easy local and cloud deployment
 
----
 
 ## 📁 Project Structure
-
----
 
 ## 🚀 Features
 
@@ -49,43 +46,43 @@ This project demonstrates the modern data workflow:
 ```bash
 git clone https://github.com/your-username/retail-ml-app.git
 cd retail-ml-app
+```
 
 ### 2. Build the Docker image
 
 ```bash
 docker build -t retail-ml-app .
+```
 
 ### 3. Run the App
 
 ```bash
 docker run -p 8501:8501 --rm retail-ml-app
-
+```
 Then visit: http://localhost:8501
 
 📊 Dashboard Highlights
-	•	✅ Segment Filter: Choose from Top Spenders, Average Buyers, etc.
-	•	📈 KPI Metrics: Avg. revenue, basket size, and unique products
-	•	📊 Charts:
-	•	Bar: Segment-wise customer count
-	•	Pie: Revenue share by segment
-	•	Scatter: Basket size vs. revenue
-	•	📋 Data Table: Filtered customer info + CSV download
+- ✅ Segment Filter: Choose from Top Spenders, Average Buyers, etc.
+- 📈 KPI Metrics: Avg. revenue, basket size, and unique products
+- 📊 Charts:
+- Bar: Segment-wise customer count
+- Pie: Revenue share by segment
+- Scatter: Basket size vs. revenue
+- 📋 Data Table: Filtered customer info + CSV download
 
 🧠 ML Model Details
-	•	Model: KMeans clustering (unsupervised)
-	•	Features:
-	•	Total revenue per customer
-	•	Total invoices
-	•	Avg. basket size
-	•	Number of unique products
-	•	Output: Customers grouped into clusters, then labeled as business-friendly segments
+- Model: KMeans clustering (unsupervised)
+- Features:
+- Total revenue per customer
+- Total invoices
+- Avg. basket size
+- Number of unique products
+- Output: Customers grouped into clusters, then labeled as business-friendly segments
 
 📄 License
 
 MIT License — Use freely for learning, showcasing, and non-commercial purposes.
 
-⸻
-
 🙌 Acknowledgements
-	•	Online Retail Dataset - UCI ML Repository
-	•	Inspired by real-world data workflows from modern data engineering and analytics stacks
+- Online Retail Dataset - UCI ML Repository
+- Inspired by real-world data workflows from modern data engineering and analytics stacks
