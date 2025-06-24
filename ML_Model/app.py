@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import plotly.express as px
 
 # Load data
-df = pd.read_csv("ML Model/clustered_customers.csv")
+df = pd.read_csv("clustered_customers.csv")
 
 # Add segment labels
 cluster_to_segment = {
@@ -66,6 +66,52 @@ fig3 = px.scatter(
     title=f"Basket Size vs Revenue — {segment}"
 )
 st.plotly_chart(fig3, use_container_width=True)
+
+import joblib
+
+# Load model and scaler
+model = joblib.load("../data/churn_model.pkl")
+scaler = joblib.load("../data/churn_scaler.pkl")
+
+# Load churn labeled data
+df_churn = pd.read_csv("../data/churn_labeled_customers.csv")
+
+# Merge churn info and required features into original filtered data
+churn_features = ["customer_id", "days_since_last_purchase", "is_churned"]
+merged = pd.merge(filtered, df_churn[churn_features], on="customer_id", how="left")
+
+# print(df.columns.tolist())
+
+# print(df_churn.columns.tolist())
+
+# Features used in training
+features = ["total_revenue", "total_invoices", "avg_basket_size", "unique_products"]
+
+# Predict churn on current segment
+X = merged[features]
+X_scaled = scaler.transform(X)
+merged["churn_pred"] = model.predict(X_scaled)
+
+# Show churn insight
+st.subheader("📉 Churn Predictions")
+churn_rate = merged["churn_pred"].mean()
+st.metric("Predicted Churn Rate", f"{churn_rate*100:.2f}%")
+
+# Pie chart visualization
+churn_counts = merged["churn_pred"].value_counts().rename({0: "Active", 1: "Churned"})
+fig = px.pie(
+    names=churn_counts.index,
+    values=churn_counts.values,
+    title="🔍 Predicted Churn Distribution"
+)
+st.plotly_chart(fig)
+
+# Show updated table
+st.subheader("📋 Customers with Churn Prediction")
+st.dataframe(merged.sort_values("total_revenue", ascending=False), use_container_width=True)
+
+# CSV Download
+st.download_button("Download Churn Data", merged.to_csv(index=False), file_name=f"{segment}_churn_customers.csv")
 
 # Segment Customer Table
 st.subheader(f"📋 Customer List: {segment} Segment")
