@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import plotly.express as px
 
 # Load data
-df = pd.read_csv("clustered_customers.csv")
+df = pd.read_csv("./clustered_customers.csv")
 
 # Add segment labels
 cluster_to_segment = {
